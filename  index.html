@@ -263,9 +263,9 @@ function enviarPedido(){
  });
  mensagem+="%0ATotal: "+encodeURIComponent(dinheiro(total));
  if(obs) mensagem+="%0AObservações: "+encodeURIComponent(obs);
- const telefone=""; 
+ const telefone="https://wa.me/message/4LMIP6EPVJK7D1"; 
  if(!/^\d{12,13}$/.test(telefone)){
-  alert("O WhatsApp da loja ainda precisa ser configurado.");
+  alert("https://wa.me/message/4LMIP6EPVJK7D1.");
   return;
  }
  window.open("https://wa.me/"+telefone+"?text="+mensagem,"_blank");
