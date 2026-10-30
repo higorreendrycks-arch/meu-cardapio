@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#c8102e">
+<title>Delícias do Pará</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+  --vermelho:#c8102e;
+  --azul:#173b8f;
+  --fundo:#fff9ed;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--fundo);
+  color:#29231e;
+  font-family:Arial,sans-serif;
+}
+header {
+  background:var(--vermelho);
+  color:white;
+  text-align:center;
+  padding:28px 12px;
+  border-bottom:5px solid #dfb65e;
+}
+header h1 {
+  font-family:Georgia,serif;
+  font-size:36px;
+  margin:0;
+}
+header p {letter-spacing:2px}
+main {
+  max-width:1100px;
+  margin:22px auto;
+  padding:0 12px;
+}
+.colunas {
+  display:grid;
+  grid-template-columns:1.5fr .85fr;
+  gap:18px;
+  align-items:start;
+}
+.painel {
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  border:1px solid #eadfc9;
+}
+h2 {color:var(--vermelho)}
+.prato {
+  display:grid;
+  grid-template-columns:100px 1fr 1fr;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid #eee4d4;
+  align-items:center;
+}
+.foto {
+  width:100px;
+  height:100px;
+  object-fit:cover;
+  border-radius:12px;
+}
+.prato h3 {color:var(--azul);margin:0 0 8px}
+.preco {color:var(--vermelho);font-weight:bold}
+.ingredientes {
+  border-left:2px solid #dfb65e;
+  padding-left:12px;
+  font-size:13px;
+  line-height:1.6;
+}
+button {
+  cursor:pointer;
+  border:0;
+  border-radius:8px;
+  padding:10px 13px;
+  font-weight:bold;
+}
+.adicionar {background:var(--azul);color:white}
+.carrinho {position:sticky;top:12px}
+.item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+}
+.quantidade {display:flex;align-items:center;gap:7px}
+.quantidade button {background:#eee5d5;color:var(--azul)}
+.total {
+  display:flex;
+  justify-content:space-between;
+  font-size:19px;
+  font-weight:bold;
+  padding:14px 0;
+}
+label {display:block;margin:12px 0 5px}
+input,textarea {
+  width:100%;
+  padding:11px;
+  border:1px solid #d8c9b0;
+  border-radius:8px;
+  font:inherit;
+}
+textarea {min-height:65px}
+.enviar {
+  width:100%;
+  background:#168b50;
+  color:white;
+  padding:14px;
+  margin-top:14px;
+}
+.vazio {color:#766b5d;font-size:14px}
+footer {text-align:center;padding:20px;color:#766b5d}
+@media(max-width:760px) {
+  .colunas {grid-template-columns:1fr}
+  .carrinho {position:static}
+  .prato {grid-template-columns:85px 1fr}
+  .foto {width:85px;height:85px;grid-row:span 2}
+  .ingredientes {
+    grid-column:2;
+    border-left:0;
+    border-top:1px solid #eee;
+    padding:8px 0 0;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Delícias do Pará</h1>
+  <p>CARDÁPIO DIGITAL</p>
+</header>
+
+<main>
+<div class="colunas">
+<section class="painel">
+<h2>Nosso cardápio</h2>
+<div id="lista-pratos"></div>
+</section>
+
+<aside class="painel carrinho">
+<h2>Seu pedido</h2>
+<div id="itens"><p class="vazio">Seu carrinho está vazio.</p></div>
+<div class="total">
+<span>Total</span><span id="total">R$ 0,00</span>
+</div>
+
+<label for="cliente">Seu nome</label>
+<input id="cliente" placeholder="Digite seu nome">
+
+<label for="endereco">Endereço de entrega</label>
+<input id="endereco" placeholder="Rua, número e bairro">
+
+<label for="observacao">Observações</label>
+<textarea id="observacao" placeholder="Alguma informação sobre o pedido?"></textarea>
+
+<button class="enviar" onclick="enviarPedido()">
+Enviar pedido pelo WhatsApp
+</button>
+</aside>
+</div>
+</main>
+
+<footer>Delícias do Pará</footer>
+
+<script>
+const pratos = [
+{
+ id:1,
+ nome:"Tacacá",
+ preco:22,
+ foto:"https://images.unsplash.com/photo-1547592180-85f173990554?w=500",
+ ingredientes:["Tucupi","Jambu","Camarão","Goma de tapioca","Alho e temperos"]
+},
+{
+ id:2,
+ nome:"Vatapá",
+ preco:24,
+ foto:"https://images.unsplash.com/photo-1547592180-85f173990554?w=500",
+ ingredientes:["Camarão","Leite de coco","Pão ou farinha","Azeite de dendê","Temperos"]
+}
+];
+
+let carrinho={};
+
+const dinheiro = valor => valor.toLocaleString("pt-BR",{
+ style:"currency",currency:"BRL"
+});
+
+function mostrarPratos(){
+ document.getElementById("lista-pratos").innerHTML=pratos.map(p=>`
+ <article class="prato">
+ <img class="foto" src="${p.foto}" alt="${p.nome}">
+ <div>
+ <h3>${p.nome}</h3>
+ <p class="preco">${dinheiro(p.preco)}</p>
+ <button class="adicionar" onclick="adicionar(${p.id})">Adicionar</button>
+ </div>
+ <div class="ingredientes">
+ <strong>Ingredientes</strong>
+ <ul>${p.ingredientes.map(i=>`<li>${i}</li>`).join("")}</ul>
+ </div>
+ </article>
+ `).join("");
+}
+
+function adicionar(id){
+ carrinho[id]=(carrinho[id]||0)+1;
+ mostrarCarrinho();
+}
+
+function alterar(id,valor){
+ carrinho[id]=(carrinho[id]||0)+valor;
+ if(carrinho[id]<=0) delete carrinho[id];
+ mostrarCarrinho();
+}
+
+function mostrarCarrinho(){
+ const itens=document.getElementById("itens");
+ const selecionados=pratos.filter(p=>carrinho[p.id]);
+ if(!selecionados.length){
+  itens.innerHTML='<p class="vazio">Seu carrinho está vazio.</p>';
+ }else{
+  itens.innerHTML=selecionados.map(p=>`
+  <div class="item">
+   <span>${p.nome}<br>${dinheiro(p.preco*p.id*0+carrinho[p.id]*p.preco)}</span>
+   <div class="quantidade">
+    <button onclick="alterar(${p.id},-1)">−</button>
+    ${carrinho[p.id]}
+    <button onclick="alterar(${p.id},1)">+</button>
+   </div>
+  </div>`).join("");
+ }
+ const total=pratos.reduce((s,p)=>s+(carrinho[p.id]||0)*p.preco,0);
+ document.getElementById("total").textContent=dinheiro(total);
+}
+
+function enviarPedido(){
+ const selecionados=pratos.filter(p=>carrinho[p.id]);
+ if(!selecionados.length){
+  alert("Adicione algum prato ao pedido.");
+  return;
+ }
+ const nome=document.getElementById("cliente").value.trim();
+ const endereco=document.getElementById("endereco").value.trim();
+ const obs=document.getElementById("observacao").value.trim();
+ if(!nome||!endereco){
+  alert("Preencha seu nome e endereço.");
+  return;
+ }
+ const total=pratos.reduce((s,p)=>s+(carrinho[p.id]||0)*p.preco,0);
+ let mensagem="Olá! Quero fazer um pedido:%0A";
+ mensagem+= "Cliente: "+encodeURIComponent(nome)+"%0A";
+ mensagem+= "Endereço: "+encodeURIComponent(endereco)+"%0A%0A";
+ selecionados.forEach(p=>{
+  mensagem+=encodeURIComponent(p.nome+" x "+carrinho[p.id]+" = "+dinheiro(p.preco*carrinho[p.id]))+"%0A";
+ });
+ mensagem+="%0ATotal: "+encodeURIComponent(dinheiro(total));
+ if(obs) mensagem+="%0AObservações: "+encodeURIComponent(obs);
+ const telefone=""; 
+ if(!/^\d{12,13}$/.test(telefone)){
+  alert("O WhatsApp da loja ainda precisa ser configurado.");
+  return;
+ }
+ window.open("https://wa.me/"+telefone+"?text="+mensagem,"_blank");
+}
+
+mostrarPratos();
+</script>
+</body>
+</html>
