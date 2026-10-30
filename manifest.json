@@ -1,0 +1,20 @@
+
+{
+  "name": "Delícias do Pará",
+  "short_name": "Delícias",
+  "description": "Cardápio digital Delícias do Pará",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff9ed",
+  "theme_color": "#c8102e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
